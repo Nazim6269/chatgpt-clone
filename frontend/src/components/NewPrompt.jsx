@@ -1,36 +1,57 @@
 import { GoogleGenAI } from "@google/genai";
 import { Image, ImageKitProvider } from "@imagekit/react";
 import { useState } from "react";
+import Markdown from "react-markdown";
 import Upload from "./Upload";
 
 const apikey = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenAI({ apiKey: apikey });
+const ai = new GoogleGenAI({ apiKey: apikey });
 
 const NewPrompt = () => {
   const [img, setImg] = useState({ dbData: {} });
   const [prompt, setPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState("");
+  const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async (e) => {
     e.preventDefault();
 
-    if (!prompt) return alert("Please enter a prompt!");
+    if (!prompt && !img.dbData?.filePath)
+      return alert("Please enter a prompt or upload an image!");
+
+    setQuestion(prompt || "Image input");
 
     setLoading(true);
     try {
-      const result = await genAI.models.generateContent({
+      const contents = [];
+
+      if (prompt) {
+        contents.push({ type: "text", text: prompt });
+      }
+
+      if (img.dbData?.filePath) {
+        contents.push({
+          type: "image",
+          imageUrl: img.dbData.filePath,
+          caption: "User uploaded image",
+        });
+      }
+
+      const response = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
-        contents: prompt,
+        contents,
       });
 
-      setAiResponse(result.text);
-      setPrompt("");
+      for await (const chunk of response) {
+        setAiResponse(chunk.text);
+      }
     } catch (error) {
       console.error("AI Error:", error);
       setAiResponse("Oops! Something went wrong.");
     } finally {
       setLoading(false);
+      setPrompt("");
     }
   };
 
@@ -50,9 +71,16 @@ const NewPrompt = () => {
         </ImageKitProvider>
       )}
       {/* AI text Response */}
+      {question && (
+        <div className="bg-purple-600/30 text-white max-w-xl px-4 py-3 rounded-xl whitespace-pre-wrap word-break-wrap">
+          {question}
+        </div>
+      )}
+
+      {/* AI Response */}
       {aiResponse && (
-        <div className="bg-white/10 px-4 text-gray-200  max-w-xl  p-4 rounded-xl whitespace-pre-wrap">
-          {aiResponse}
+        <div className="bg-white/10 text-gray-200 max-w-xl px-4 py-3 rounded-xl whitespace-pre-wrap word-break-wrap">
+          <Markdown>{aiResponse}</Markdown>
         </div>
       )}
       {/* Prompt Form */}
