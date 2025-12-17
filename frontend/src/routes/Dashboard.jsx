@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InputBox from "../components/InputBox";
+import NewPrompt from "../components/NewPrompt";
 
 const chatsMock = [
   { id: 1, title: "Build a chatbot UI" },
@@ -88,7 +88,7 @@ const Dashboard = () => {
 
         {/* Input */}
         <div className="border-t border-white/10 p-4 absolute bottom-0 sm:w-lg">
-          <InputBox />
+          <NewPrompt />
         </div>
       </main>
     </div>
