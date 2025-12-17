@@ -8,7 +8,7 @@ import {
 import { useRef, useState } from "react";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-const Upload = () => {
+const Upload = ({ setImg }) => {
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef(null);
   const abortController = new AbortController();
@@ -16,7 +16,6 @@ const Upload = () => {
   const authenticator = async () => {
     try {
       const response = await fetch(`${backendURL}/api/upload`);
-      console.log(response);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -25,8 +24,6 @@ const Upload = () => {
         );
       }
       const data = await response.json();
-
-      console.log(data, "data");
 
       const { signature, expire, token, publicKey } = data;
       return { signature, expire, token, publicKey };
@@ -83,6 +80,7 @@ const Upload = () => {
         abortSignal: abortController.signal,
       });
       console.log("Upload response:", uploadResponse);
+      setImg((prev) => ({ ...prev, dbData: uploadResponse }));
     } catch (error) {
       if (error instanceof ImageKitAbortError) {
         console.error("Upload aborted:", error.reason);
@@ -99,16 +97,32 @@ const Upload = () => {
     }
   };
   return (
-    <div>
-      {" "}
-      <input type="file" ref={fileInputRef} />
-      {/* Button to trigger the upload process */}
-      <button type="button" onClick={handleUpload} className="bg-red-400">
-        Upload file
-      </button>
-      <br />
-      {/* Display the current upload progress */}
-      Upload progress: <progress value={progress} max={100}></progress>
+    <div className="flex items-center">
+      {/* Hidden File Input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        id="file-upload"
+        onChange={handleUpload}
+      />
+
+      {/* Upload Button */}
+      <label
+        htmlFor="file-upload"
+        className="cursor-pointer p-2 rounded-xl hover:bg-white/10 transition flex items-center justify-center"
+      >
+        <img src="/attachment.png" alt="Attach" className="w-5 h-5" />
+      </label>
+
+      {/* Optional Progress Bar */}
+      {progress > 0 && (
+        <progress
+          value={progress}
+          max={100}
+          className="ml-2 h-1 w-20 overflow-hidden rounded bg-white/20"
+        />
+      )}
     </div>
   );
 };

@@ -36,8 +36,8 @@ const Homepage = () => {
           </h2>
 
           <h3 className="text-sm sm:text-base leading-relaxed text-gray-300">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Placeat
-            sint dolorem doloribus, architecto dolor.
+            Think smarter. Chat faster. Your AI assistant for ideas, answers,
+            and creativity.
           </h3>
 
           <Link
