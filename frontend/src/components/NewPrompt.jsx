@@ -21,7 +21,12 @@ const NewPrompt = () => {
       return alert("Please enter a prompt or upload an image!");
 
     setQuestion(prompt || "Image input");
-
+    //this is post request to chats history api
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chats`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: prompt }),
+    });
     setLoading(true);
     try {
       const contents = [];
