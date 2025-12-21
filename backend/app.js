@@ -1,16 +1,22 @@
-const expess = require("express");
-const cors = require("cors");
-const { router } = require("./routes/route");
+import { clerkMiddleware } from "@clerk/express";
+import cors from "cors";
+import express from "express";
+import router from "./routes/route.js";
 
-const app = expess();
+const app = express();
+
 const middlewareArray = [
-  cors(),
-  expess.json(),
-  expess.urlencoded({ extended: true }),
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  }),
+  clerkMiddleware(),
+  express.json(),
+  express.urlencoded({ extended: true }),
 ];
 
-//using middleware
+// using middleware
 app.use(middlewareArray);
 app.use("/", router);
 
-module.exports = app;
+export default app;

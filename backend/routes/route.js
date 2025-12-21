@@ -1,21 +1,25 @@
-const router = require("express").Router();
-const ImageKit = require("@imagekit/nodejs");
-const { default: chatModel } = require("../models/chat.model");
-const { default: userChatsModel } = require("../models/userChats.model");
+import { getAuth, requireAuth } from "@clerk/express";
+import ImageKit from "@imagekit/nodejs";
+import express from "express";
+import { createChat } from "../controller/chat.controller.js";
+const router = express.Router();
+
 const client = new ImageKit({
   privateKey: process.env.IMAGE_KIT_PRIVATE_KEY,
 });
 
-//============routes are declared here====================
-//home route api
+// ============ routes are declared here ====================
+
+// home route
 router.get("/", (req, res) => {
   res.send({ message: "Hello ChatGpt Clone" });
 });
 
-//this is file uploading route==
+// file upload auth route
 router.get("/api/upload", (req, res) => {
   const { token, expire, signature } =
     client.helper.getAuthenticationParameters();
+
   res.send({
     token,
     expire,
@@ -24,39 +28,15 @@ router.get("/api/upload", (req, res) => {
   });
 });
 
-//this is chats route
-router.post("/api/chats", async (req, res) => {
-  const { userId, text } = req.body;
+// test route
+router.post("/api/test", requireAuth(), async (req, res) => {
+  const { userId } = getAuth(req);
+  console.log(userId);
 
-  try {
-    //this will create new chat and saved to mongodb
-    const newChat = new chatModel({
-      userId: userId,
-      history: [{ role: "user", parts: [{ text }] }],
-    });
-    const savedChat = await newChat.save();
-
-    //this will create new user chats
-    const userChats = await userChatsModel.find({ userId: userId });
-
-    if (!userChats.length) {
-      const newUserChats = new userChatsModel({
-        userId: savedChat._id,
-        chats: [{ _id: savedChat._id, title: text.substring(0, 40) }],
-      });
-      await newUserChats.save();
-    } else {
-      //this will update old user chat
-      await userChatsModel.updateOne(
-        { userId: userId },
-        { $push: { _id: savedChat._id, title: text.substring(0, 40) } }
-      );
-
-      res.status(201).send(newChat._id);
-    }
-  } catch (error) {
-    res.status(500).send({ message: "Error in creating chat" });
-  }
+  res.send({ message: "hello" });
 });
 
-module.exports = { router };
+// chats route
+router.post("/api/chats", requireAuth(), createChat);
+
+export default router;
