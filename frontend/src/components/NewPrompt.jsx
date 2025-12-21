@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { Image, ImageKitProvider } from "@imagekit/react";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 import Upload from "./Upload";
 
 const apikey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -13,6 +14,7 @@ const NewPrompt = () => {
   const [aiResponse, setAiResponse] = useState("");
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleGenerate = async (e) => {
     e.preventDefault();
@@ -21,13 +23,7 @@ const NewPrompt = () => {
       return alert("Please enter a prompt or upload an image!");
 
     setQuestion(prompt || "Image input");
-    //this is post request to chats history api
-    await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chats`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: prompt }),
-    });
-    console.log("first");
+
     setLoading(true);
 
     try {
@@ -45,20 +41,14 @@ const NewPrompt = () => {
         });
       }
 
-      // const response = await ai.models.generateContentStream({
-      //   model: "gemini-2.5-flash",
-      //   contents,
-      // });
-      const response = await ai.models.generateContent({
+      const response = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
-        contents: contents,
+        contents,
       });
-      console.log(response.text);
-      setAiResponse(response.text);
 
-      // for await (const chunk of response) {
-      //   setAiResponse(chunk.text);
-      // }
+      for await (const chunk of response) {
+        setAiResponse(chunk.text);
+      }
     } catch (error) {
       console.error("AI Error:", error);
       setAiResponse("Oops! Something went wrong.");

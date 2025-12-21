@@ -1,5 +1,5 @@
+import { useAuth } from "@clerk/clerk-react";
 import { useState } from "react";
-import NewPrompt from "../components/NewPrompt";
 
 const chatsMock = [
   { id: 1, title: "Build a chatbot UI" },
@@ -16,6 +16,22 @@ const options = [
 const Dashboard = () => {
   const [activeChat, setActiveChat] = useState(chatsMock[0]);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { userId } = useAuth();
+
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    const text = e.target.text.value;
+    if (!text) return;
+    setLoading(true);
+    //this is post request to chats history api
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chats`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, text }),
+    });
+    setLoading(false);
+  };
 
   return (
     <div className="flex h-screen bg-[#0b022c] text-white">
@@ -88,7 +104,34 @@ const Dashboard = () => {
 
         {/* Input */}
         <div className="border-t border-white/10 p-4 absolute bottom-0 sm:w-lg">
-          <NewPrompt />
+          <form
+            onSubmit={handleGenerate}
+            className="flex items-center gap-3 w-full bg-white/10 p-3 rounded-2xl shadow-md"
+          >
+            {/* Text Input */}
+            <input
+              type="text"
+              placeholder="Ask Nazim AI anything..."
+              className="flex-1 rounded-2xl bg-transparent px-4 py-3 text-sm text-white
+          placeholder:text-white/50 outline-none"
+              name="text"
+            />
+
+            {/* Send Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex items-center justify-center rounded-2xl bg-purple-600
+          px-4 py-3 text-sm font-medium text-white hover:bg-purple-500 transition
+          disabled:opacity-50"
+            >
+              {loading ? (
+                "..."
+              ) : (
+                <img src="/arrow.png" alt="Send" className="w-4 h-4" />
+              )}
+            </button>
+          </form>
         </div>
       </main>
     </div>
