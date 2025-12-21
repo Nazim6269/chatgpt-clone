@@ -35,6 +35,7 @@ app.get("/api/upload", (req, res) => {
 app.post("/api/chats", (req, res) => {
   const { text } = req.body;
   console.log(text);
+  res.return("hello");
 });
 
 module.exports = app;

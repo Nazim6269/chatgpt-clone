@@ -27,7 +27,9 @@ const NewPrompt = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: prompt }),
     });
+    console.log("first");
     setLoading(true);
+
     try {
       const contents = [];
 
@@ -43,14 +45,20 @@ const NewPrompt = () => {
         });
       }
 
-      const response = await ai.models.generateContentStream({
+      // const response = await ai.models.generateContentStream({
+      //   model: "gemini-2.5-flash",
+      //   contents,
+      // });
+      const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents,
+        contents: contents,
       });
+      console.log(response.text);
+      setAiResponse(response.text);
 
-      for await (const chunk of response) {
-        setAiResponse(chunk.text);
-      }
+      // for await (const chunk of response) {
+      //   setAiResponse(chunk.text);
+      // }
     } catch (error) {
       console.error("AI Error:", error);
       setAiResponse("Oops! Something went wrong.");
