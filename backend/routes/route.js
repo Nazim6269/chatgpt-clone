@@ -1,7 +1,11 @@
 import { getAuth, requireAuth } from "@clerk/express";
 import ImageKit from "@imagekit/nodejs";
 import express from "express";
-import { createChat } from "../controller/chat.controller.js";
+import {
+  createChatController,
+  fetchChatsController,
+  fetchUserChatsController,
+} from "../controller/chat.controller.js";
 const router = express.Router();
 
 const client = new ImageKit({
@@ -36,7 +40,13 @@ router.post("/api/test", requireAuth(), async (req, res) => {
   res.send({ message: "hello" });
 });
 
+//fetching usr chats route
+router.get("/api/userChats", requireAuth(), fetchUserChatsController);
+
+//fetching chats route
+router.get("/api/chats/:id", requireAuth(), fetchChatsController);
+
 // chats route
-router.post("/api/chats", requireAuth(), createChat);
+router.post("/api/chats", requireAuth(), createChatController);
 
 export default router;

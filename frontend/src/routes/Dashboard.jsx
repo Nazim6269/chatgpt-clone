@@ -1,5 +1,5 @@
-import { useAuth } from "@clerk/clerk-react";
 import { useState } from "react";
+import { serverUrl } from "../../secret";
 
 const chatsMock = [
   { id: 1, title: "Build a chatbot UI" },
@@ -17,29 +17,35 @@ const Dashboard = () => {
   const [activeChat, setActiveChat] = useState(chatsMock[0]);
   const [openSidebar, setOpenSidebar] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { userId } = useAuth();
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     const text = e.target.text.value;
-    if (!text) return;
+
+    if (!text || loading) return;
+
     setLoading(true);
-    //this is post request to chats history api
-    await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chats`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, text }),
-    });
-    setLoading(false);
+
+    try {
+      const data = await fetch(`${serverUrl}/api/chats`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      e.target.reset();
+    }
   };
 
   return (
     <div className="flex h-screen bg-[#0b022c] text-white">
-      {/* Left side SIDEBAR (Desktop) */}
-
-      {/* Right side  */}
-      <main className="flex flex-1 flex-col  justify-center ">
-        {/* Chat header */}
+      {/* Right side */}
+      <main className="flex flex-1 flex-col overflow-hidden">
+        {/* Chat header (Mobile) */}
         <header className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:hidden">
           <button
             onClick={() => setOpenSidebar(true)}
@@ -63,6 +69,7 @@ const Dashboard = () => {
                   ✕
                 </button>
               </div>
+
               <div className="p-3 space-y-2">
                 {chatsMock.map((chat) => (
                   <button
@@ -81,54 +88,100 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Image Section */}
-        <div className="flex flex-col items-center justify-center gap-6 mt-8">
-          <div className="logo flex items-center gap-3">
-            <img src="/logo.png" alt="" className="w-24 sm:w-22" />
-            <h1 className="text-3xl sm:text-4xl font-bold">Nazim AI</h1>
-          </div>
+        {/* Scrollable Content */}
+        <div className="flex-1 flex justify-center items-center overflow-y-auto px-4 py-6">
+          <div className="mx-auto flex max-w-3xl flex-col  items-center gap-6">
+            {/* Logo */}
+            <div className="flex items-center gap-3 pt-6 sm:pt-10">
+              <img src="/logo.png" alt="Nazim AI" className="w-16 sm:w-20" />
+              <h1 className="text-2xl sm:text-4xl font-bold">Nazim AI</h1>
+            </div>
 
-          {/* Options */}
-          <div className="options flex flex-col gap-4 sm:flex-row sm:gap-6">
-            {options.map((opt) => (
-              <div
-                key={opt.label}
-                className="option flex flex-col items-center gap-2 rounded-xl bg-white/5 px-6 py-4 text-center hover:bg-white/10 transition cursor-pointer"
-              >
-                <img src={opt.icon} alt="" className="h-12 w-12" />
-                <span className="text-sm sm:text-base">{opt.label}</span>
-              </div>
-            ))}
+            {/* Options */}
+            <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+              {options.map((opt) => (
+                <div
+                  key={opt.label}
+                  className="
+            flex flex-col items-center gap-2
+            rounded-xl
+            bg-white/5
+            px-4 py-4 sm:px-6
+            text-center
+            transition
+            hover:bg-white/10
+            cursor-pointer
+          "
+                >
+                  <img
+                    src={opt.icon}
+                    alt={opt.label}
+                    className="h-10 w-10 sm:h-12 sm:w-12"
+                  />
+                  <span className="text-sm sm:text-base">{opt.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Input */}
-        <div className="border-t border-white/10 p-4 absolute bottom-0 sm:w-lg">
+        {/* Input (Sticky) */}
+        <div className="sticky bottom-0 border-t border-white/10 bg-[#0b022c] px-3 py-2 sm:p-4">
           <form
             onSubmit={handleGenerate}
-            className="flex items-center gap-3 w-full bg-white/10 p-3 rounded-2xl shadow-md"
+            className="
+      mx-auto flex w-full max-w-3xl items-center gap-2 sm:gap-3
+      rounded-2xl bg-white/10
+      p-2 sm:p-3
+      shadow-md
+    "
           >
             {/* Text Input */}
             <input
+              autoFocus
               type="text"
-              placeholder="Ask Nazim AI anything..."
-              className="flex-1 rounded-2xl bg-transparent px-4 py-3 text-sm text-white
-          placeholder:text-white/50 outline-none"
               name="text"
+              placeholder="Ask Nazim AI anything..."
+              disabled={loading}
+              className="
+        flex-1 min-w-0
+        rounded-2xl
+        bg-transparent
+        px-3 sm:px-4
+        py-2.5 sm:py-3
+        text-sm sm:text-base
+        text-white
+        placeholder:text-white/50
+        outline-none
+        disabled:opacity-60
+      "
             />
 
             {/* Send Button */}
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center justify-center rounded-2xl bg-purple-600
-          px-4 py-3 text-sm font-medium text-white hover:bg-purple-500 transition
-          disabled:opacity-50"
+              className="
+        shrink-0
+        flex items-center justify-center
+        rounded-2xl
+        bg-purple-600
+        p-2.5 sm:px-4 sm:py-3
+        text-sm font-medium
+        text-white
+        hover:bg-purple-500
+        transition
+        disabled:opacity-50
+      "
             >
               {loading ? (
-                "..."
+                <span className="text-xs sm:text-sm">...</span>
               ) : (
-                <img src="/arrow.png" alt="Send" className="w-4 h-4" />
+                <img
+                  src="/arrow.png"
+                  alt="Send"
+                  className="h-4 w-4 sm:h-5 sm:w-5"
+                />
               )}
             </button>
           </form>

@@ -59,7 +59,7 @@ const NewPrompt = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 ">
       {/* Image Preview */}
       {img.dbData?.filePath && (
         <ImageKitProvider urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}>
@@ -89,33 +89,65 @@ const NewPrompt = () => {
       {/* Prompt Form */}
       <form
         onSubmit={handleGenerate}
-        className="flex items-center gap-3 w-full bg-white/10 p-3 rounded-2xl shadow-md"
+        className="
+    flex items-center gap-2 sm:gap-3
+    w-full
+    bg-white/10
+    p-2 sm:p-3
+    rounded-2xl
+    shadow-md
+  "
       >
         {/* Upload */}
-        <Upload setImg={setImg} />
+        <div className="shrink-0">
+          <Upload setImg={setImg} />
+        </div>
 
         {/* Text Input */}
         <input
           type="text"
           placeholder="Ask Nazim AI anything..."
-          className="flex-1 rounded-2xl bg-transparent px-4 py-3 text-sm text-white
-          placeholder:text-white/50 outline-none"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
+          className="
+      flex-1
+      min-w-0
+      rounded-2xl
+      bg-transparent
+      px-3 sm:px-4
+      py-2.5 sm:py-3
+      text-sm sm:text-base
+      text-white
+      placeholder:text-white/50
+      outline-none
+    "
         />
 
         {/* Send Button */}
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center justify-center rounded-2xl bg-purple-600
-          px-4 py-3 text-sm font-medium text-white hover:bg-purple-500 transition
-          disabled:opacity-50"
+          className="
+      shrink-0
+      flex items-center justify-center
+      rounded-2xl
+      bg-purple-600
+      p-2.5 sm:px-4 sm:py-3
+      text-sm font-medium
+      text-white
+      hover:bg-purple-500
+      transition
+      disabled:opacity-50
+    "
         >
           {loading ? (
-            "..."
+            <span className="text-xs sm:text-sm">...</span>
           ) : (
-            <img src="/arrow.png" alt="Send" className="w-4 h-4" />
+            <img
+              src="/arrow.png"
+              alt="Send"
+              className="w-4 h-4 sm:w-5 sm:h-5"
+            />
           )}
         </button>
       </form>
