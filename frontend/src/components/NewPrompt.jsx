@@ -34,7 +34,6 @@ const NewPrompt = ({ data }) => {
       return res.json();
     },
     onSuccess: (data) => {
-      console.log(data, "newPrompt");
       queryClient
         .invalidateQueries({ queryKey: ["chats", data._id] })
         .then(() => {
@@ -81,8 +80,9 @@ const NewPrompt = ({ data }) => {
         model: "gemini-2.5-flash",
         contents,
       });
-
+      console.log(response, "response");
       for await (const chunk of response) {
+        console.log(aiResponse, "ai response");
         setAiResponse(chunk.text);
       }
 

@@ -51,20 +51,32 @@ const Chat = () => {
             <div
               key={index}
               className={`
-    w-fit max-w-[90%] sm:max-w-[75%] lg:max-w-xl
-    rounded-2xl px-4 py-2
-    whitespace-pre-wrap wrap-break-word text-sm sm:text-base
-    ${
-      isUser
-        ? "bg-purple-600/30 text-white self-start"
-        : "bg-white/10 text-gray-200 self-end"
-    }
-  `}
+                flex
+                ${isUser ? "justify-start" : "justify-end"}
+              `}
             >
-              <Markdown>{msg?.parts?.[0]?.text}</Markdown>
+              <div
+                className={`
+                  w-full max-w-[90%] sm:max-w-[75%] lg:max-w-xl
+                  min-h-10
+                  rounded-2xl px-4 py-2
+                  whitespace-pre-wrap wrap-break-word
+                  text-sm sm:text-base
+                  transition-all
+                  ${
+                    isUser
+                      ? "bg-purple-600/30 text-white"
+                      : "bg-white/10 text-gray-200"
+                  }
+                `}
+              >
+                <Markdown>{msg?.parts?.[0]?.text}</Markdown>
+              </div>
             </div>
           );
         })}
+
+        {/* Scroll anchor */}
         <div ref={endRef} />
       </div>
 
