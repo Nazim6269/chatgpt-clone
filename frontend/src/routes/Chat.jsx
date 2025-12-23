@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import Markdown from "react-markdown";
 import { useLocation } from "react-router-dom";
 import { serverUrl } from "../../secret";
 import NewPrompt from "../components/NewPrompt";
 
 const Chat = () => {
   const path = useLocation().pathname;
-  console.log(path, "path");
   const chatId = path.split("/").pop();
 
   const { isPending, error, data } = useQuery({
@@ -61,7 +61,7 @@ const Chat = () => {
     }
   `}
             >
-              {msg?.parts?.[0]?.text}
+              <Markdown>{msg?.parts?.[0]?.text}</Markdown>
             </div>
           );
         })}
@@ -70,7 +70,7 @@ const Chat = () => {
 
       {/* Input box */}
       <div className="border-t border-white/10 p-4 bg-[#09022c]">
-        <NewPrompt />
+        <NewPrompt data={data} />
       </div>
     </div>
   );

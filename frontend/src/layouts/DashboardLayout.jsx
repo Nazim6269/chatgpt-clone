@@ -2,7 +2,6 @@ import { useAuth } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-
 import { serverUrl } from "../../secret";
 import LeftSideBar from "../components/LeftSideBar";
 
@@ -34,7 +33,6 @@ const fetchUserChats = async () => {
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const { isLoaded, userId } = useAuth();
-
   const [activeChat, setActiveChat] = useState(CHAT_MOCKS[0]);
 
   const {

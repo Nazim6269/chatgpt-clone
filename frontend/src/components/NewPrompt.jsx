@@ -1,21 +1,57 @@
 import { GoogleGenAI } from "@google/genai";
 import { Image, ImageKitProvider } from "@imagekit/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import Markdown from "react-markdown";
-import { useNavigate } from "react-router-dom";
+import { geminiApiKey, imagekitUrl, serverUrl } from "../../secret";
 import Upload from "./Upload";
 
-const apikey = import.meta.env.VITE_GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: apikey });
+const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
-const NewPrompt = () => {
-  const [img, setImg] = useState({ dbData: {} });
+//========= New prompt component starts from here===================//
+const NewPrompt = ({ data }) => {
+  const [img, setImg] = useState({ dbData: {}, aiData: {} });
   const [prompt, setPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState("");
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
+  //=============== this is the data mutation function================//
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`${serverUrl}/api/chats/${data._id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: question.length ? question : undefined,
+          answer: aiResponse,
+          img: img.dbData?.filePath || undefined,
+        }),
+      });
+
+      return res.json();
+    },
+    onSuccess: (data) => {
+      console.log(data, "newPrompt");
+      queryClient
+        .invalidateQueries({ queryKey: ["chats", data._id] })
+        .then(() => {
+          setQuestion("");
+
+          setImg({
+            dbData: {},
+            aiData: {},
+          });
+        });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  //========== This is on submit function ==================//
   const handleGenerate = async (e) => {
     e.preventDefault();
 
@@ -49,6 +85,8 @@ const NewPrompt = () => {
       for await (const chunk of response) {
         setAiResponse(chunk.text);
       }
+
+      mutation.mutate();
     } catch (error) {
       console.error("AI Error:", error);
       setAiResponse("Oops! Something went wrong.");
@@ -62,7 +100,7 @@ const NewPrompt = () => {
     <div className="space-y-4 ">
       {/* Image Preview */}
       {img.dbData?.filePath && (
-        <ImageKitProvider urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}>
+        <ImageKitProvider urlEndpoint={imagekitUrl}>
           <Image
             src={img.dbData.filePath}
             width={500}

@@ -6,7 +6,7 @@ import {
   upload,
 } from "@imagekit/react";
 import { useRef, useState } from "react";
-const backendURL = import.meta.env.VITE_BACKEND_URL;
+import { serverUrl } from "../../secret";
 
 const Upload = ({ setImg }) => {
   const [progress, setProgress] = useState(0);
@@ -15,7 +15,7 @@ const Upload = ({ setImg }) => {
 
   const authenticator = async () => {
     try {
-      const response = await fetch(`${backendURL}/api/upload`);
+      const response = await fetch(`${serverUrl}/api/upload`);
 
       if (!response.ok) {
         const errorText = await response.text();

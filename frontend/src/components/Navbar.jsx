@@ -11,8 +11,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="  fixed top-0 w-full bg-[#09022c] text-white z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav className=" fixed top-0 w-full bg-[#09022c] text-white z-50 border-b border-b-white/10">
+      <div className=" mx-auto px-17 py-4 flex items-center justify-between">
         {/* Logo */}
         <h1 className="text-xl font-bold tracking-wide">
           <Link to={"/"}>

@@ -66,3 +66,36 @@ export const fetchChatsController = async (req, res) => {
     res.status(500).send({ message: "Failed to fetch chats" });
   }
 };
+
+//================ update chat controller ==================//
+export const updateChatsController = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { question, answer, img } = req.body;
+
+  const newChatItems = [
+    ...(question
+      ? [{ role: "user", parts: [{ text: question }], ...(img && { img }) }]
+      : []),
+    { role: "model", parts: [{ text: answer }] },
+  ];
+
+  try {
+    const updatedChat = await chatModel.updateOne(
+      {
+        _id: req.params.id,
+        userId,
+      },
+      {
+        $push: {
+          history: {
+            $each: newChatItems,
+          },
+        },
+      }
+    ); //here i could also use findOneAndUpdate
+
+    res.status(200).send(updatedChat);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to update chats" });
+  }
+};

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-
-const MONGODB_URI = process.env.MONGODB_URI;
+import { mongoUrl } from "../secret.js";
 
 let cached = global.mongoose;
 if (!cached) {
@@ -10,7 +9,7 @@ if (!cached) {
 export const connectMongo = async () => {
   if (cached.conn) return cached.conn;
 
-  cached.conn = await mongoose.connect(MONGODB_URI);
+  cached.conn = await mongoose.connect(mongoUrl);
   console.log("✅ Mongo is connected successfully");
   return cached.conn;
 };

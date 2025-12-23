@@ -1,4 +1,6 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../../secret";
 
 const chatsMock = [
@@ -12,33 +14,47 @@ const options = [
   { icon: "/image.png", label: "Analyze Images" },
   { icon: "/code.png", label: "Help me with my Code" },
 ];
+//==================this function will fetch chats===================//
+const fetchChats = async (text) => {
+  const response = await fetch(`${serverUrl}/api/chats`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
 
+  if (!response.ok) {
+    throw new Error("Failed to fetch user chats");
+  }
+
+  return response.json();
+};
+
+//====================Dashboard component starts from here==================//
 const Dashboard = () => {
   const [activeChat, setActiveChat] = useState(chatsMock[0]);
   const [openSidebar, setOpenSidebar] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: fetchChats,
+    onSuccess: (id) => {
+      queryClient.invalidateQueries(["users-chats"]);
+      navigate(`/dashboard/chats/${id.chatId}`);
+    },
+  });
+
+  //== this will trigger when form is submitted========//
   const handleGenerate = async (e) => {
     e.preventDefault();
     const text = e.target.text.value;
 
     if (!text || loading) return;
 
-    setLoading(true);
-
-    try {
-      const data = await fetch(`${serverUrl}/api/chats`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      e.target.reset();
-    }
+    mutation.mutate(text);
+    e.target.reset();
   };
 
   return (
@@ -93,8 +109,10 @@ const Dashboard = () => {
           <div className="mx-auto flex max-w-3xl flex-col  items-center gap-6">
             {/* Logo */}
             <div className="flex items-center gap-3 pt-6 sm:pt-10">
-              <img src="/logo.png" alt="Nazim AI" className="w-16 sm:w-20" />
-              <h1 className="text-2xl sm:text-4xl font-bold">Nazim AI</h1>
+              <img src="/logo.png" alt="Nazim AI" className="w-16 sm:w-20 " />
+              <h1 className="text-2xl sm:text-4xl font-bold bg-linear-to-r from-indigo-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Nazim AI
+              </h1>
             </div>
 
             {/* Options */}
