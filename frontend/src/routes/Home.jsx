@@ -27,7 +27,7 @@ const Homepage = () => {
       >
         {/* LEFT */}
         <div className="flex max-w-xl flex-col gap-5 text-center lg:text-left">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight bg-linear-to-r from-indigo-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
             Nazim AI
           </h1>
 

@@ -51,13 +51,13 @@ const Chat = () => {
             <div
               key={index}
               className={`
-                flex
+                flex 
                 ${isUser ? "justify-start" : "justify-end"}
               `}
             >
               <div
                 className={`
-                  w-full max-w-[90%] sm:max-w-[75%] lg:max-w-xl
+                   max-w-[90%] sm:max-w-[75%] lg:max-w-4xl
                   min-h-10
                   rounded-2xl px-4 py-2
                   whitespace-pre-wrap wrap-break-word
