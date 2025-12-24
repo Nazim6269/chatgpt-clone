@@ -50,12 +50,28 @@ const Dashboard = () => {
   const handleGenerate = async (e) => {
     e.preventDefault();
     const text = e.target.text.value;
-    console.log(e, "e");
     if (!text || loading) return;
 
     mutation.mutate(text);
+
     e.target.reset();
   };
+
+  if (mutation.isPending) {
+    return (
+      <div className="flex items-center text-5xl  justify-center h-screen text-white">
+        Loading...
+      </div>
+    );
+  }
+
+  if (mutation.error) {
+    return (
+      <div className="flex items-center justify-center h-screen text-red-400">
+        {mutation.error?.message || "Something went wrong"}
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[#0b022c] text-white">
