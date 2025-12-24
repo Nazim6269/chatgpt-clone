@@ -166,6 +166,15 @@ Deployed on Vercel for live demo.
 
 🔗 Live Demo: [https://chatgpt-clone-afra.vercel.app/](https://chatgpt-clone-afra.vercel.app/)
 
+## 🤝 Contributing
+
+Contributions are welcome!
+Feel free to fork the repository and submit a pull request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
 ## 👨‍💻 Author
 
 Nazim Uddin  
