@@ -92,7 +92,6 @@ const NewPrompt = ({ data }) => {
       setAiResponse("Oops! Something went wrong.");
     } finally {
       setLoading(false);
-      setPrompt("");
     }
   };
 
