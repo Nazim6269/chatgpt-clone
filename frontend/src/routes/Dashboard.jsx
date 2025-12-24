@@ -50,7 +50,7 @@ const Dashboard = () => {
   const handleGenerate = async (e) => {
     e.preventDefault();
     const text = e.target.text.value;
-
+    console.log(e, "e");
     if (!text || loading) return;
 
     mutation.mutate(text);
@@ -87,7 +87,7 @@ const Dashboard = () => {
               </div>
 
               <div className="p-3 space-y-2">
-                {chatsMock.map((chat) => (
+                {chatsMock?.map((chat) => (
                   <button
                     key={chat.id}
                     onClick={() => {
@@ -117,7 +117,7 @@ const Dashboard = () => {
 
             {/* Options */}
             <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-              {options.map((opt) => (
+              {options?.map((opt) => (
                 <div
                   key={opt.label}
                   className="

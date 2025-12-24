@@ -57,7 +57,7 @@ const DashboardLayout = () => {
 
   if (!isLoaded || isPending) {
     return (
-      <div className="flex items-center justify-center h-screen text-white">
+      <div className="flex items-center text-5xl bg-primaryBG justify-center h-screen text-white">
         Loading...
       </div>
     );
@@ -65,7 +65,7 @@ const DashboardLayout = () => {
 
   if (isError) {
     return (
-      <div className="flex items-center justify-center h-screen text-red-400">
+      <div className="flex items-center  bg-primaryBG justify-center h-screen text-red-400">
         {error?.message || "Something went wrong"}
       </div>
     );

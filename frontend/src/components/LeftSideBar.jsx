@@ -45,7 +45,7 @@ const LeftSideBar = ({ chats, onActiveChat, activeChat }) => {
         </span>
 
         <div className="space-y-1">
-          {chats.map((chat) => {
+          {chats?.map((chat) => {
             const isActive = activeChat?._id === chat._id;
 
             return (
