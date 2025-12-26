@@ -19,14 +19,14 @@ const NewPrompt = ({ data }) => {
   //=============== this is the data mutation function================//
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (fullResponse) => {
       const res = await fetch(`${serverUrl}/api/chats/${data._id}`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           question: question.length ? question : undefined,
-          answer: aiResponse,
+          answer: fullResponse,
           img: img.dbData?.filePath || undefined,
         }),
       });
@@ -80,18 +80,19 @@ const NewPrompt = ({ data }) => {
         model: "gemini-2.5-flash",
         contents,
       });
-      console.log(response, "response");
+      let fullResponse = "";
       for await (const chunk of response) {
-        console.log(aiResponse, "ai response");
-        setAiResponse(chunk.text);
+        fullResponse += chunk.text || "";
+        setAiResponse(fullResponse);
       }
 
-      mutation.mutate();
+      mutation.mutate(fullResponse);
     } catch (error) {
       console.error("AI Error:", error);
       setAiResponse("Oops! Something went wrong.");
     } finally {
       setLoading(false);
+      setPrompt("");
     }
   };
 
